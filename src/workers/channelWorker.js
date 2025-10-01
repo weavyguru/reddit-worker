@@ -9,7 +9,7 @@ const logger = createLogger(`Worker-${workerData.subreddit}`);
  * Worker thread for processing a single subreddit channel
  */
 async function processChannel() {
-  const { clientId, clientSecret, subreddit, hours, days, testMode } = workerData;
+  const { clientId, clientSecret, subreddit, platform, hours, days, testMode } = workerData;
 
   try {
     logger.info(`Starting channel worker for ${subreddit}`);
@@ -70,7 +70,7 @@ async function processChannel() {
       postsCount: posts.length
     });
 
-    const ingestionResults = await vectorDB.ingestPosts(posts, testMode);
+    const ingestionResults = await vectorDB.ingestPosts(posts, platform, testMode);
 
     // Send completion message
     parentPort.postMessage({

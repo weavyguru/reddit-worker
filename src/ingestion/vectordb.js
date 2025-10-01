@@ -18,13 +18,13 @@ export class VectorDBIngestion {
   /**
    * Transform Reddit post data to Vector DB format
    */
-  transformPostToVectorFormat(redditPost) {
+  transformPostToVectorFormat(redditPost, platformName) {
     const items = [];
     const { post, comments, subreddit, metadata } = redditPost;
 
     // Transform the main post
     const postItem = {
-      platform: subreddit,
+      platform: platformName || subreddit,
       source: 'Reddit',
       id: post.id,
       timestamp: new Date(post.created_utc * 1000).toISOString(),
@@ -44,7 +44,7 @@ export class VectorDBIngestion {
       const commentItems = this.transformCommentsToVectorFormat(
         comments,
         post.id,
-        subreddit
+        platformName || subreddit
       );
       items.push(...commentItems);
     }
@@ -160,7 +160,7 @@ export class VectorDBIngestion {
   /**
    * Ingest Reddit posts in batches
    */
-  async ingestPosts(redditPosts, testMode = false) {
+  async ingestPosts(redditPosts, platformName, testMode = false) {
     const results = {
       total: 0,
       successful: 0,
@@ -170,12 +170,12 @@ export class VectorDBIngestion {
       errors: []
     };
 
-    logger.info(`Starting ingestion of ${redditPosts.length} Reddit posts`);
+    logger.info(`Starting ingestion of ${redditPosts.length} Reddit posts for platform: ${platformName}`);
 
     for (const redditPost of redditPosts) {
       try {
         // Transform to Vector DB format
-        const items = this.transformPostToVectorFormat(redditPost);
+        const items = this.transformPostToVectorFormat(redditPost, platformName);
         results.total += items.length;
 
         logger.info(`Ingesting post ${redditPost.post.id} with ${items.length - 1} comments`);

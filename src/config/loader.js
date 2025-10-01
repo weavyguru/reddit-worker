@@ -53,6 +53,7 @@ export function getEnabledChannels(config) {
     if (channelConfig.enabled === true) {
       channels.push({
         subreddit,
+        platform: channelConfig.platform || subreddit,
         clientId,
         clientSecret
       });

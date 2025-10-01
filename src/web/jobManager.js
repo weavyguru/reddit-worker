@@ -138,6 +138,7 @@ export class JobManager {
           clientId: channel.clientId,
           clientSecret: channel.clientSecret,
           subreddit: channel.subreddit,
+          platform: channel.platform,
           hours,
           days,
           testMode

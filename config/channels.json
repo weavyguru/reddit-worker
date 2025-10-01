@@ -1,17 +1,22 @@
 {
   "r/lovable": {
-    "enabled": true
+    "enabled": true,
+    "platform": "Lovable"
   },
   "r/boltnewbuilders": {
-    "enabled": true
+    "enabled": true,
+    "platform": "Bolt"
   },
   "r/Base44": {
-    "enabled": true
+    "enabled": true,
+    "platform": "base44"
   },
   "r/replit": {
-    "enabled": true
+    "enabled": true,
+    "platform": "replit"
   },
   "r/v0_": {
-    "enabled": true
+    "enabled": true,
+    "platform": "v0"
   }
 }
