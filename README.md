@@ -4,6 +4,7 @@ A Node.js background service that fetches Reddit posts from configured subreddit
 
 ## Features
 
+- 🌐 **Web UI**: Monitor and control jobs via real-time dashboard
 - 🔄 Parallel processing of multiple subreddits using worker threads
 - 📊 Fetches posts with full comment trees
 - 🔐 OAuth2 authentication with automatic token refresh
@@ -11,7 +12,8 @@ A Node.js background service that fetches Reddit posts from configured subreddit
 - 📝 Comprehensive logging with Winston
 - 🧪 Test mode for rapid development
 - 🔁 Automatic retry logic for failed operations
-- 📈 Detailed execution summary reports
+- 📈 Real-time job progress via WebSocket
+- 🎛️ Channel management UI for adding/removing subreddits
 
 ## Prerequisites
 
@@ -36,28 +38,51 @@ VECTORDB_API_TOKEN=your_token_here
 LOG_LEVEL=info
 ```
 
-### 2. Channel Configuration
+### 2. Reddit API Credentials
+
+Add your Reddit API credentials to the `.env` file:
+
+```env
+REDDIT_CLIENT_ID=your_client_id_here
+REDDIT_CLIENT_SECRET=your_client_secret_here
+```
+
+### 3. Channel Configuration
 
 Edit `config/channels.json` to add your subreddits:
 
 ```json
 {
   "r/lovable": {
-    "clientId": "YOUR_CLIENT_ID_HERE",
-    "clientSecret": "YOUR_CLIENT_SECRET_HERE",
     "enabled": true
   },
   "r/technology": {
-    "clientId": "ANOTHER_CLIENT_ID",
-    "clientSecret": "ANOTHER_CLIENT_SECRET",
     "enabled": false
   }
 }
 ```
 
+Note: All channels share the same Reddit credentials from the `.env` file.
+
 ## Usage
 
-### Basic Commands
+### Web UI (Recommended)
+
+Start the web server:
+```bash
+npm run web
+```
+
+Then open your browser to `http://localhost:3001`
+
+The web UI allows you to:
+- Start new ingestion jobs with custom time windows
+- Monitor active jobs in real-time
+- View job history and statistics
+- Add/remove/enable/disable channels
+- Toggle test mode for quick testing
+
+### CLI Mode
 
 Fetch posts from the last 24 hours:
 ```bash
@@ -110,8 +135,15 @@ reddit-intelligence-daemon/
 │   │   └── vectordb.js          # Vector DB ingestion
 │   ├── utils/
 │   │   └── logger.js            # Winston logger setup
-│   └── workers/
-│       └── channelWorker.js     # Worker thread for each channel
+│   ├── workers/
+│   │   └── channelWorker.js     # Worker thread for each channel
+│   └── web/
+│       ├── server.js            # Express web server & API
+│       └── jobManager.js        # Job state management
+├── public/
+│   ├── index.html               # Web UI HTML
+│   ├── style.css                # Web UI styles
+│   └── app.js                   # Web UI client-side JS
 ├── config/
 │   └── channels.json            # Channel configuration
 ├── .env                         # Environment variables (not in git)
@@ -210,16 +242,58 @@ npm start -- --hours 1 --test
 
 This limits to 5 posts per channel and uses the test collection in the vector DB.
 
+## Deployment to Railway
+
+### Prerequisites
+- Railway account (https://railway.app)
+- GitHub repository with your code
+
+### Steps
+
+1. **Push to GitHub**:
+```bash
+git remote add origin https://github.com/yourusername/reddit-worker.git
+git push -u origin master
+```
+
+2. **Create New Project on Railway**:
+- Go to https://railway.app/new
+- Select "Deploy from GitHub repo"
+- Choose your repository
+
+3. **Configure Environment Variables**:
+In Railway's project settings, add these variables:
+- `VECTORDB_API_TOKEN`: Your vector DB API token
+- `REDDIT_CLIENT_ID`: Your Reddit client ID
+- `REDDIT_CLIENT_SECRET`: Your Reddit client secret
+- `PORT`: Railway will auto-assign this
+- `LOG_LEVEL`: `info` (optional)
+
+4. **Deploy**:
+Railway will automatically:
+- Detect the `Procfile`
+- Run `npm install`
+- Start the web server with `npm run web`
+
+5. **Access Your App**:
+Railway will provide a public URL (e.g., `https://your-app.railway.app`)
+
+### Important Notes
+- Railway uses the `Procfile` to determine how to run your app
+- The web server runs on the `PORT` environment variable
+- Channels can be managed through the web UI once deployed
+- Make sure `config/channels.json` is committed to your repo
+
 ## Troubleshooting
 
 ### "Configuration file not found"
 Ensure `config/channels.json` exists and is valid JSON.
 
 ### "VECTORDB_API_TOKEN environment variable is not set"
-Create a `.env` file with your API token.
+Create a `.env` file with your API token (locally) or set environment variables in Railway (production).
 
 ### "Authentication failed"
-Verify your Reddit client ID and secret in `config/channels.json`.
+Verify your Reddit client ID and secret in `.env` or Railway environment variables.
 
 ### Rate limiting errors
 The daemon automatically handles rate limiting with exponential backoff. If persistent, reduce the number of concurrent channels or increase delays.
