@@ -1,0 +1,23 @@
+{
+  "name": "reddit-intelligence-daemon",
+  "version": "1.0.0",
+  "description": "Background service that fetches Reddit posts and ingests them into a vector database",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "web": "node src/web/server.js"
+  },
+  "keywords": ["reddit", "intelligence", "vector-db", "daemon"],
+  "author": "Ill-Basket3443",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "commander": "^11.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "p-limit": "^5.0.0",
+    "ws": "^8.16.0",
+    "winston": "^3.11.0"
+  }
+}

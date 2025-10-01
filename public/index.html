@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reddit Intelligence Daemon - Control Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤖 Reddit Intelligence Daemon</h1>
+      <p class="subtitle">Monitor and control Reddit data ingestion jobs</p>
+    </header>
+
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="label">Connection:</span>
+        <span id="ws-status" class="badge badge-warning">Connecting...</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Active Jobs:</span>
+        <span id="active-jobs-count" class="badge badge-info">0</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Total Jobs:</span>
+        <span id="total-jobs-count" class="badge badge-secondary">0</span>
+      </div>
+    </div>
+
+    <div class="main-layout">
+      <!-- Left Sidebar: Channels -->
+      <aside class="sidebar">
+        <section class="card card-sidebar">
+          <div class="sidebar-header">
+            <h2>📡 Channels</h2>
+            <button class="btn btn-small btn-primary" onclick="showAddChannelModal()">+ Add</button>
+          </div>
+          <div id="channels-list">
+            <p class="empty-state">Loading...</p>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <section class="card">
+          <h2>Start New Job</h2>
+      <form id="new-job-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <input type="radio" name="time-unit" value="hours" checked>
+              Hours
+            </label>
+            <input type="number" id="hours-input" name="hours" min="1" max="720" value="24" placeholder="24">
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="radio" name="time-unit" value="days">
+              Days
+            </label>
+            <input type="number" id="days-input" name="days" min="1" max="30" value="7" placeholder="7" disabled>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="test-mode" name="testMode">
+              Test Mode (5 posts max)
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Start Job</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Active Jobs</h2>
+      <div id="active-jobs">
+        <p class="empty-state">No active jobs</p>
+      </div>
+    </section>
+
+        <section class="card">
+          <h2>Job History</h2>
+          <div id="job-history">
+            <p class="empty-state">No completed jobs</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Channel Modal -->
+  <div id="channel-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Channel</h2>
+        <button class="modal-close" onclick="closeChannelModal()">&times;</button>
+      </div>
+      <form id="channel-form">
+        <div class="form-group">
+          <label for="modal-subreddit">Subreddit Name</label>
+          <input type="text" id="modal-subreddit" placeholder="r/example or example" required>
+          <small style="color: #6b7280; margin-top: 4px; display: block;">Reddit credentials are shared across all channels (configured in .env)</small>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="modal-enabled" checked>
+            Enabled
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeChannelModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Channel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
